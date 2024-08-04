@@ -1,5 +1,8 @@
 package com.greenify.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,10 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.greenify.dao.SellerDao;
 import com.greenify.dao.UserDao;
-import com.greenify.dto.SellerDto;
-import com.greenify.entities.Role;
+import com.greenify.dto.sellerDtos.SellerDetailsDto;
+import com.greenify.dto.sellerDtos.SellerDto;
 import com.greenify.entities.Seller;
 import com.greenify.entities.User;
+import com.greenify.enums.Role;
 
 @Service
 @Transactional
@@ -38,6 +42,46 @@ public class SellerServiceImpl implements SellerService {
         userDao.save(user);
         
 		return modelMapper.map(seller, SellerDto.class);
+	}
+
+	@Override
+	public List<SellerDetailsDto> getSellerDetails() {
+		List<Seller> sellerList = sellerDao.findAll();
+		return mapSellerToSellerDetailsDTO(sellerList);
+	}
+	
+	private List<SellerDetailsDto> mapSellerToSellerDetailsDTO(List<Seller> sellers) {
+		
+		List<SellerDetailsDto> sellerDetailsDtoList = new ArrayList<>();
+		
+		sellers.forEach(seller ->{
+			SellerDetailsDto sellerDetailsDto = SellerDetailsDto.builder()
+			.name(seller.getUser().getFirstName() + " " + seller.getUser().getLastName())
+			.email(seller.getUser().getEmail())
+			.mobileNumber(seller.getUser().getMobileNumber())
+			.address(seller.getAddress())
+			.gstinNumber(seller.getGstinNumber())
+			.storeName(seller.getStoreName())
+			.phone(seller.getPhone())
+			.isBlocked(seller.getUser().getIsBlocked())
+			.build();
+			
+			sellerDetailsDtoList.add(sellerDetailsDto);
+		});
+		
+		return sellerDetailsDtoList;	
+	}
+
+	@Override
+	public int blockSeller(Long sellerId) {
+		
+		return userDao.blockSeller(sellerId);
+	}
+
+	@Override
+	public int unblockSeller(Long sellerId) {
+		
+		return userDao.unblockSeller(sellerId);
 	}
 
 }

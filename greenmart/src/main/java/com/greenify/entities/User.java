@@ -15,6 +15,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.greenify.enums.Role;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -60,4 +62,7 @@ public class User extends BaseEntity{
 	
 	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
 	private List<Order> orders;
+	
+	@Column(nullable = false)
+	private Boolean isBlocked = false;
 }
