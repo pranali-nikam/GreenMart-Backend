@@ -2,28 +2,26 @@ package com.greenify.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.greenify.dto.userDtos.UserDto;
-import com.greenify.service.UserService;
+import com.greenify.dto.orderDtos.PlaceOrderDto;
+import com.greenify.service.OrderService;
 
 @RestController
-@RequestMapping("api/users")
-public class UserController {
+@RequestMapping("api/order")
+public class OrderController {
 
 	@Autowired
-	private UserService userService;
+	private OrderService orderService;
 	
-	@PostMapping("/register")
+	@PostMapping("/placeOrder/{userId}")
 	@ResponseStatus(HttpStatus.CREATED)
-	public UserDto registerUser(@RequestBody UserDto userDto) {
-		
-		return userService.registerUser(userDto);
+	public PlaceOrderDto placeOrder(@RequestBody PlaceOrderDto placeOrder,@PathVariable Long userId) {
+		return orderService.placeOrder(placeOrder, userId);
 	}
-	
-	
 }

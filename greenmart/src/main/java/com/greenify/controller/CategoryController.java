@@ -8,22 +8,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.greenify.dto.userDtos.UserDto;
-import com.greenify.service.UserService;
+import com.greenify.dto.categoryDtos.CategoryDto;
+import com.greenify.service.CategoryService;
 
 @RestController
-@RequestMapping("api/users")
-public class UserController {
-
+@RequestMapping("api/category")
+public class CategoryController {
+	
 	@Autowired
-	private UserService userService;
+	private CategoryService categoryService;
 	
-	@PostMapping("/register")
+	@PostMapping("/add")
 	@ResponseStatus(HttpStatus.CREATED)
-	public UserDto registerUser(@RequestBody UserDto userDto) {
-		
-		return userService.registerUser(userDto);
+	public CategoryDto addCategories(@RequestBody CategoryDto categoryDto) {
+		return categoryService.addCategories(categoryDto);
 	}
-	
-	
 }
