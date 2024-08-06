@@ -65,4 +65,11 @@ public class User extends BaseEntity{
 	
 	@Column(nullable = false)
 	private Boolean isBlocked = false;
+
+	public static Object withUsername(String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
 }
