@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.greenify.enums.Status;
@@ -51,13 +52,21 @@ public class Order extends BaseEntity{
 	@Column(nullable = false)
 	private Status status;
 	
-	@Column(nullable = false)
-	private String shippingAddress;
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "shipping_address_id")
+	private ShippingAddress shippingAddress;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id",nullable = false)
 	private User user;
 	
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
 	private List<OrderItem> orderItems;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "seller_id",nullable = false)
+	private Seller seller;
+	
+	@OneToOne(mappedBy = "order",cascade = CascadeType.ALL,orphanRemoval = true)
+	private PaymentDetail paymentDetails;
 }

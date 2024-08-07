@@ -65,4 +65,7 @@ public class User extends BaseEntity{
 	
 	@Column(nullable = false)
 	private Boolean isBlocked = false;
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ShippingAddress> shippingAddress;
 }
