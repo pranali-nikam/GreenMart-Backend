@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.greenify.dto.orderDtos.OrderStatusCountDto;
 import com.greenify.dto.productDtos.ProductDetailsDto;
 import com.greenify.dto.productDtos.ProductPartialUpdateDto;
 import com.greenify.dto.productDtos.ProductUpdateDto;
 import com.greenify.dto.sellerDtos.SellerDto;
+import com.greenify.service.OrderService;
 import com.greenify.service.ProductService;
 import com.greenify.service.SellerService;
 
@@ -30,6 +32,9 @@ public class SellerController {
 	
 	@Autowired
 	private ProductService productService;
+	
+	@Autowired
+	private OrderService orderService;
 	
 	@PostMapping("/register")
 	@ResponseStatus(HttpStatus.CREATED)
@@ -60,5 +65,13 @@ public class SellerController {
 	@ResponseStatus(HttpStatus.OK)
 	public List<ProductDetailsDto> getAllProductsBySellerId(@PathVariable Long sellerId){
 		return productService.getAllProductsBySellerId(sellerId);
+	}
+	
+	@GetMapping("/countOfStatus/{sellerId}")
+	@ResponseStatus(HttpStatus.OK)
+	public OrderStatusCountDto countOrdersByStatus(Long sellerId) {
+		
+		return orderService.countOrdersByStatus(sellerId);
+		
 	}
 }

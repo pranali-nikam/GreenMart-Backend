@@ -65,11 +65,8 @@ public class User extends BaseEntity{
 	
 	@Column(nullable = false)
 	private Boolean isBlocked = false;
-
-	public static Object withUsername(String string) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ShippingAddress> shippingAddress;
+  
 }

@@ -30,7 +30,13 @@ public class PlaceOrderDto {
 		
 	private Status status;
 	
-	private String shippingAddress;
+	private ShippingDetailDto shippingAddress;
 		
 	private List<OrderItemDto> orderItems;
+	
+	private PaymentDetailDto paymentDetails;
+	
+	private Long sellerId;
+		
+ 
 }

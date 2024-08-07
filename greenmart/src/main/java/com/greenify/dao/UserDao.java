@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.greenify.entities.ShippingAddress;
 import com.greenify.entities.User;
 import com.greenify.enums.Role;
 
@@ -35,5 +36,6 @@ public interface UserDao extends JpaRepository<User, Long> {
 	@Transactional
 	@Query("UPDATE User u SET u.isBlocked = false WHERE u.userId = (SELECT s.user.userId FROM Seller s WHERE s.sellerId = :sellerId )")
 	int unblockSeller(@Param("sellerId")Long sellerId);
+	
 
 }

@@ -1,8 +1,6 @@
 package com.greenify.dto.orderDtos;
 
-import java.math.BigDecimal;
-
-
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,11 +10,9 @@ import lombok.ToString;
 @Getter
 @ToString
 @NoArgsConstructor
-public class OrderItemDto {
+public class SellerDetailDto {
 
-	private int quantity;
-
-	private BigDecimal price;
-
-	private Long productId;
+	private Long sellerId;
+	
+	private String storeName;
 }
