@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.greenify.dao.ProductDao;
+import com.greenify.dto.categoryDtos.CategoryNameDto;
 import com.greenify.dto.productDtos.ProductDetailsDto;
 import com.greenify.dto.productDtos.ProductDto;
 import com.greenify.dto.productDtos.ProductPartialUpdateDto;
+import com.greenify.dto.productDtos.ProductSearchDto;
 import com.greenify.dto.productDtos.ProductUpdateDto;
 import com.greenify.entities.Category;
 import com.greenify.entities.Product;
@@ -139,6 +141,23 @@ public class ProductServiceImpl implements ProductService {
 		 });
 		return productDetailsDtoList;
 	}
+
+	
+
+	@Override
+	public List<ProductSearchDto> getAllProductByCategoryId(Long categoryId) {
+		List<ProductSearchDto> productSearchDtoList = new ArrayList<>();
+		
+		List<Product> productList = productDao.findByCategory_CategoryId(categoryId);
+		productList.forEach(product ->{
+			ProductSearchDto productSearchDto = modelMapper.map(product,ProductSearchDto.class);
+			productSearchDtoList.add(productSearchDto);
+		});
+		
+		return productSearchDtoList;
+	}
+
+	
 	
 	
 
