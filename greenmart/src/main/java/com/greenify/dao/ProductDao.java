@@ -30,6 +30,9 @@ public interface ProductDao extends JpaRepository<Product, Long> {
     void decrementStock(@Param("productId")Long productId,@Param("stockCount") Integer stockCount);
     
     List<Product> findByCategory_CategoryId(Long categoryId);
+    
+    @Query("SELECT p FROM Product p WHERE p.productName = :productName")
+    List<Product> findByProductName(String productName);
 
     
     
