@@ -157,6 +157,18 @@ public class ProductServiceImpl implements ProductService {
 		return productSearchDtoList;
 	}
 
+	@Override
+	public List<ProductSearchDto> getProductByProductName(String productName) {
+		List<ProductSearchDto> productSearchDtoList = new ArrayList<>();
+		
+		List<Product> productList = productDao.findByProductName(productName);
+		productList.forEach(product ->{
+			ProductSearchDto productSearchDto = modelMapper.map(product,ProductSearchDto.class);
+			productSearchDtoList.add(productSearchDto);
+		});
+		return productSearchDtoList;
+	}
+
 	
 	
 	
