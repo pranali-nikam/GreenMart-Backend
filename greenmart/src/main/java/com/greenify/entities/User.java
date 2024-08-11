@@ -69,6 +69,8 @@ public class User extends BaseEntity{
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ShippingAddress> shippingAddress;
 
+	@OneToOne(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+	private Wishlist wishlist;
 	
   
 }

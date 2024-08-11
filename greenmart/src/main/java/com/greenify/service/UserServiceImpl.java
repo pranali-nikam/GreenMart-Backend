@@ -13,6 +13,7 @@ import com.greenify.dao.ShippingAddressDao;
 import com.greenify.dao.UserDao;
 import com.greenify.dto.orderDtos.ShippingDetailDto;
 import com.greenify.dto.userDtos.CompleteUserDetailsDto;
+import com.greenify.dto.userDtos.ProfileDto;
 import com.greenify.dto.userDtos.UserDto;
 import com.greenify.entities.ShippingAddress;
 import com.greenify.entities.User;
@@ -89,6 +90,20 @@ public class UserServiceImpl implements UserService {
 			});
 		}
 		return shippingDetailDtos;
+	}
+
+	@Override
+	public ProfileDto getUserProfile(Long userId) {
+		Optional<User> user = userDao.findById(userId);
+		ProfileDto profileDto = ProfileDto.builder()
+		.name(user.get().getFirstName()+" "+user.get().getLastName())
+		.mobileNumber(user.get().getMobileNumber())
+		.orders(user.get().getOrders())
+		.shippingAddress(user.get().getShippingAddress())
+		.wishlist(user.get().getWishlist())
+		.build();
+		
+		return profileDto;
 	}
 
 	
