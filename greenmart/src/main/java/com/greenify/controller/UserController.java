@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.greenify.dto.orderDtos.ShippingDetailDto;
+import com.greenify.dto.userDtos.ProfileDto;
 import com.greenify.dto.userDtos.UserDto;
 import com.greenify.service.UserService;
 
@@ -44,5 +45,12 @@ public class UserController {
 		return userService.getShippingAddress(userId);
 		
 	}
+	
+	@GetMapping("/getUserProfile/{userId}")
+	@ResponseStatus(HttpStatus.OK)
+	public ProfileDto getUserProfile(@PathVariable Long userId) {
+		return userService.getUserProfile(userId);
+	}
+
 	
 }
