@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,56 +32,63 @@ public class SellerController {
 
 	@Autowired
 	private SellerService sellerService;
-	
+
 	@Autowired
 	private ProductService productService;
-	
+
 	@Autowired
 	private OrderService orderService;
-	
+
 	@PostMapping("/register")
 	@ResponseStatus(HttpStatus.CREATED)
 	public SellerDto registerSeller(@RequestBody SellerDto sellerDto) {
 		return sellerService.registerSeller(sellerDto);
 	}
-	
-	
+
 	@GetMapping("/produtsCount/{sellerId}")
 	@ResponseStatus(HttpStatus.OK)
 	public Long countProductsBySeller(@PathVariable Long sellerId) {
 		return productService.countProductsBySeller(sellerId);
 	}
-	
+
 	@PatchMapping("/update/{productId}")
-	public ResponseEntity<Object> updateProduct(@RequestBody List<ProductUpdateDto> productUpdateDtos, @PathVariable("productId") Long productId){
-		
-		ProductPartialUpdateDto productPartialUpdateDto = productService.updateProductDetails(productUpdateDtos, productId);
-		
-		if(productPartialUpdateDto!=null) {
+	public ResponseEntity<Object> updateProduct(@RequestBody List<ProductUpdateDto> productUpdateDtos,
+			@PathVariable("productId") Long productId) {
+
+		ProductPartialUpdateDto productPartialUpdateDto = productService.updateProductDetails(productUpdateDtos,
+				productId);
+
+		if (productPartialUpdateDto != null) {
 			return new ResponseEntity<Object>(productPartialUpdateDto, HttpStatus.OK);
 		}
-		
-		return new ResponseEntity<Object>("Product Not Found for Id : "+productId,HttpStatus.NOT_FOUND);
+
+		return new ResponseEntity<Object>("Product Not Found for Id : " + productId, HttpStatus.NOT_FOUND);
 	}
-	
+
 	@GetMapping("/getProductsBySellerId/{sellerId}")
 	@ResponseStatus(HttpStatus.OK)
-	public List<ProductDetailsDto> getAllProductsBySellerId(@PathVariable Long sellerId){
+	public List<ProductDetailsDto> getAllProductsBySellerId(@PathVariable Long sellerId) {
 		return productService.getAllProductsBySellerId(sellerId);
 	}
-	
+
 	@GetMapping("/countOfStatus/{sellerId}")
 	@ResponseStatus(HttpStatus.OK)
-	public OrderStatusCountDto countOrdersByStatusAndSellerId(Long sellerId) {
-		
+	public OrderStatusCountDto countOrdersByStatusAndSellerId(@PathVariable Long sellerId) {
+
 		return orderService.countOrdersByStatusAndSellerId(sellerId);
-		
+
 	}
-	
+
 	@GetMapping("/getOrdersByStatus/{sellerId}")
 	@ResponseStatus(HttpStatus.OK)
-	public List<OrdersStatusDto> getOrdersByStatusAndSellerId(Long sellerId,String status) {
+	public List<OrdersStatusDto> getOrdersByStatusAndSellerId(@PathVariable Long sellerId, String status) {
 		return orderService.getOrdersByStatusAndSellerId(sellerId, Status.valueOf(status.toUpperCase()));
 	}
-	
+
+	@PatchMapping("/updateOrderByStatus")
+	@ResponseStatus(HttpStatus.OK)
+	public void updateOrderByStatus(@RequestParam Long orderId, @RequestParam String status) {
+		 orderService.updateOrderByStatus(orderId, Status.valueOf(status.toUpperCase()));
+	}
+
 }

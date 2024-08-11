@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -143,71 +146,87 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public List<OrdersStatusDto> getOrdersByStatusAndSellerId(Long sellerId,Status status) {
+	public List<OrdersStatusDto> getOrdersByStatusAndSellerId(Long sellerId, Status status) {
 
 		List<OrdersStatusDto> ordersStatusDtoList = new ArrayList<OrdersStatusDto>();
 
-		List<Order> orderPendingList = orderDao.findAllOrdersBySellerIdAndStatus(sellerId, status);
+		List<Order> orderList = orderDao.findAllOrdersBySellerIdAndStatus(sellerId, status);
 
-		orderPendingList.forEach(order -> {
-			OrdersStatusDto ordersStatusDto = OrdersStatusDto.builder()
-					.orderId(order.getOrderId())
-					.orderDate(order.getOrderDate())
-					.paymentMethod(order.getPaymentDetails().getPaymentMethod())
-					.totalAmount(order.getTotalAmount())
-					.status(order.getStatus())
+		orderList.forEach(order -> {
+			OrdersStatusDto ordersStatusDto = OrdersStatusDto.builder().orderId(order.getOrderId())
+					.orderDate(order.getOrderDate()).paymentMethod(order.getPaymentDetails().getPaymentMethod())
+					.totalAmount(order.getTotalAmount()).status(order.getStatus())
 					.shippingAddress(ShippingDetailDto.builder()
 							.addressLine1(order.getShippingAddress().getAddressLine1())
 							.addressLine2(order.getShippingAddress().getAddressLine2())
-							.city(order.getShippingAddress().getCity())
-							.country(order.getShippingAddress().getCountry())
+							.city(order.getShippingAddress().getCity()).country(order.getShippingAddress().getCountry())
 							.mobileNumber(order.getShippingAddress().getMobileNumber())
 							.state(order.getShippingAddress().getState())
 							.zipcode(order.getShippingAddress().getZipcode())
-							.shippingId(order.getShippingAddress().getShippingId())
-							.build())
-					.orderItems(fetchDtoFromOrderItem(order.getOrderItems()))
-					.build();
-					ordersStatusDtoList.add(ordersStatusDto);
+							.shippingId(order.getShippingAddress().getShippingId()).build())
+					.orderItems(fetchDtoFromOrderItem(order.getOrderItems())).build();
+			ordersStatusDtoList.add(ordersStatusDto);
 		});
-		
+
 		return ordersStatusDtoList;
 	}
 
+	private List<OrderItemDto> fetchDtoFromOrderItem(List<OrderItem> orderItem) {
 
-	private List<OrderItemDto> fetchDtoFromOrderItem(List<OrderItem> orderItem){
-		
 		List<OrderItemDto> orderItemDtos = new ArrayList<OrderItemDto>();
-		
+
 		orderItem.forEach(order -> {
-			
-			OrderItemDto orderItemDto = OrderItemDto.builder()
-					.price(order.getPrice())
-					.productId(order.getProduct().getProductId())
-					.quantity(order.getQuantity())
-					.build();
+
+			OrderItemDto orderItemDto = OrderItemDto.builder().price(order.getPrice())
+					.productId(order.getProduct().getProductId()).quantity(order.getQuantity()).build();
 			orderItemDtos.add(orderItemDto);
-			
+
 		});
 		return orderItemDtos;
 	}
 
 	@Override
-	public List<OrdersStatusDto> geOrdersByStatus(Status status) {
-		// TODO Auto-generated method stub
-		return null;
+	public Page<OrdersStatusDto> getOrdersByStatus(Pageable pageable ,Status status) {
+
+		List<OrdersStatusDto> ordersStatusDtoList = new ArrayList<OrdersStatusDto>();
+
+		Page<Order> orderPage = orderDao.findAllOrdersByStatus(pageable,status);
+
+		orderPage.getContent().forEach(order -> {
+			OrdersStatusDto ordersStatusDto = OrdersStatusDto.builder().orderId(order.getOrderId())
+					.orderDate(order.getOrderDate()).paymentMethod(order.getPaymentDetails().getPaymentMethod())
+					.shippingAddress(ShippingDetailDto.builder()
+							.addressLine1(order.getShippingAddress().getAddressLine1())
+							.addressLine2(order.getShippingAddress().getAddressLine2())
+							.city(order.getShippingAddress().getCity()).country(order.getShippingAddress().getCountry())
+							.mobileNumber(order.getShippingAddress().getMobileNumber())
+							.state(order.getShippingAddress().getState())
+							.zipcode(order.getShippingAddress().getZipcode())
+							.shippingId(order.getShippingAddress().getShippingId()).build())
+					.orderItems(fetchDtoFromOrderItem(order.getOrderItems())).build();
+			ordersStatusDtoList.add(ordersStatusDto);
+
+		});
+
+		return new PageImpl<OrdersStatusDto>(ordersStatusDtoList,pageable,orderPage.getTotalElements());
 	}
 
 	@Override
 	public OrderStatusCountDto countOrdersByStatus() {
-		
+
 		List<List<String>> statusCountList = orderDao.countOrderByStatus();
-		
-		Map<String,Long> countMap = statusCountList.stream()
+
+		Map<String, Long> countMap = statusCountList.stream()
 				.collect(Collectors.toMap(e -> e.get(0), e -> Long.parseLong(e.get(1))));
 
 		return OrderStatusCountDto.builder().pendingCount(countMap.get(Status.PENDING.name()))
 				.shippedCount(countMap.get(Status.SHIPPED.name())).deliveredCount(countMap.get(Status.DELIVERED.name()))
 				.build();
+	}
+
+	@Override
+	public void updateOrderByStatus(Long orderId, Status status) {
+
+		orderDao.updateOrderStatus(orderId, status);
 	}
 }
