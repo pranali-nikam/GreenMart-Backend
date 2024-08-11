@@ -1,6 +1,7 @@
 package com.greenify.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -36,6 +37,9 @@ public interface UserDao extends JpaRepository<User, Long> {
 	@Transactional
 	@Query("UPDATE User u SET u.isBlocked = false WHERE u.userId = (SELECT s.user.userId FROM Seller s WHERE s.sellerId = :sellerId )")
 	int unblockSeller(@Param("sellerId")Long sellerId);
+
+	
+	
 	
 
 }
