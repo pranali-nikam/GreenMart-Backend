@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.greenify.dto.orderDtos.OrderStatusCountDto;
+import com.greenify.dto.orderDtos.OrdersStatusDto;
 import com.greenify.dto.productDtos.ProductDetailsDto;
 import com.greenify.dto.productDtos.ProductPartialUpdateDto;
 import com.greenify.dto.productDtos.ProductUpdateDto;
 import com.greenify.dto.sellerDtos.SellerDto;
+import com.greenify.enums.Status;
 import com.greenify.service.OrderService;
 import com.greenify.service.ProductService;
 import com.greenify.service.SellerService;
@@ -69,9 +71,16 @@ public class SellerController {
 	
 	@GetMapping("/countOfStatus/{sellerId}")
 	@ResponseStatus(HttpStatus.OK)
-	public OrderStatusCountDto countOrdersByStatus(Long sellerId) {
+	public OrderStatusCountDto countOrdersByStatusAndSellerId(Long sellerId) {
 		
-		return orderService.countOrdersByStatus(sellerId);
+		return orderService.countOrdersByStatusAndSellerId(sellerId);
 		
 	}
+	
+	@GetMapping("/getOrdersByStatus/{sellerId}")
+	@ResponseStatus(HttpStatus.OK)
+	public List<OrdersStatusDto> getOrdersByStatusAndSellerId(Long sellerId,String status) {
+		return orderService.getOrdersByStatusAndSellerId(sellerId, Status.valueOf(status.toUpperCase()));
+	}
+	
 }

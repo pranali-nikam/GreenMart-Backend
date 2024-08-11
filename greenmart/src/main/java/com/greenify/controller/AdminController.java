@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.greenify.dto.orderDtos.OrderStatusCountDto;
 import com.greenify.dto.productDtos.ProductDetailsDto;
 import com.greenify.dto.sellerDtos.SellerDetailsDto;
 import com.greenify.dto.userDtos.CompleteUserDetailsDto;
+import com.greenify.service.OrderService;
 import com.greenify.service.ProductService;
 import com.greenify.service.SellerService;
 import com.greenify.service.UserService;
@@ -30,6 +32,9 @@ public class AdminController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private OrderService orderService;
 	
 	@GetMapping("/getSellers")
 	@ResponseStatus(HttpStatus.OK)
@@ -83,5 +88,13 @@ public class AdminController {
 		return sellerService.unblockSeller(sellerId);
 	}
 	
+	
+	@GetMapping("/countOfStatus")
+	@ResponseStatus(HttpStatus.OK)
+	public OrderStatusCountDto countOrdersByStatus() {
+		
+		return orderService.countOrdersByStatus();
+		
+	}
 	
 }
