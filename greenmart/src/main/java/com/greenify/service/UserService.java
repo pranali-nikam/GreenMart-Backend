@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.greenify.dto.orderDtos.ShippingDetailDto;
 import com.greenify.dto.userDtos.CompleteUserDetailsDto;
+import com.greenify.dto.userDtos.ProfileDto;
 import com.greenify.dto.userDtos.UserDto;
 
 public interface UserService {
@@ -19,5 +20,8 @@ public interface UserService {
 	public ShippingDetailDto addShippingAddress(ShippingDetailDto shippingDetailDto,Long userId);
 	
 	public List<ShippingDetailDto> getShippingAddress(Long userId);
+	
+	public ProfileDto getUserProfile(Long userId);
+
 
 }
