@@ -41,5 +41,7 @@ public interface UserDao extends JpaRepository<User, Long> {
 	
 	
 	
-
+    
+    @Query("SELECT u FROM User u WHERE u.userId = (SELECT s.user.userId FROM Seller s WHERE s.sellerId = :sellerId)")
+    User findBySellerId(Long sellerId);
 }
