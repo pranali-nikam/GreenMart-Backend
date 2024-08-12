@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import com.greenify.dto.orderDtos.OrderStatusCountDto;
 import com.greenify.dto.orderDtos.OrdersStatusDto;
 import com.greenify.dto.orderDtos.PlaceOrderDto;
+import com.greenify.dto.orderDtos.UserOrderDto;
 import com.greenify.enums.Status;
 
 public interface OrderService {
@@ -23,5 +24,9 @@ public interface OrderService {
 	public OrderStatusCountDto countOrdersByStatus();
 
 	public void updateOrderByStatus(Long orderId, Status status);
+	
+	public List<UserOrderDto> getOrdersByUserId(Long userId);
+
+
 
 }
