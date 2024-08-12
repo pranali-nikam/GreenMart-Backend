@@ -11,5 +11,6 @@ import lombok.ToString;
 @NoArgsConstructor
 public class CategoryNameDto {
 	
+	private Long CategoryId;
 	private String categoryName;
 }
