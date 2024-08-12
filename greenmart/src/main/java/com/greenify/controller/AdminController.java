@@ -15,6 +15,7 @@ import com.greenify.dto.orderDtos.OrderStatusCountDto;
 import com.greenify.dto.productDtos.ProductDetailsDto;
 import com.greenify.dto.sellerDtos.SellerDetailsDto;
 import com.greenify.dto.userDtos.CompleteUserDetailsDto;
+import com.greenify.dto.userDtos.ProfileDto;
 import com.greenify.service.OrderService;
 import com.greenify.service.ProductService;
 import com.greenify.service.SellerService;
@@ -95,6 +96,11 @@ public class AdminController {
 		
 		return orderService.countOrdersByStatus();
 		
+	}
+	@GetMapping("/getAdminProfile/{userId}")
+	@ResponseStatus(HttpStatus.OK)
+	public ProfileDto getAdminProfile(@PathVariable Long userId){
+		return userService.getUserProfile(userId);
 	}
 	
 }

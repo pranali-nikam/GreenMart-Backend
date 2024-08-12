@@ -8,4 +8,5 @@ import com.greenify.entities.Seller;
 
 public interface SellerDao extends JpaRepository<Seller, Long> {
 
+	
 }

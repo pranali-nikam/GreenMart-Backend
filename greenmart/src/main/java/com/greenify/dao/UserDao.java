@@ -37,5 +37,7 @@ public interface UserDao extends JpaRepository<User, Long> {
 	@Query("UPDATE User u SET u.isBlocked = false WHERE u.userId = (SELECT s.user.userId FROM Seller s WHERE s.sellerId = :sellerId )")
 	int unblockSeller(@Param("sellerId")Long sellerId);
 	
-
+    
+    @Query("SELECT u FROM User u WHERE u.userId = (SELECT s.user.userId FROM Seller s WHERE s.sellerId = :sellerId)")
+    User findBySellerId(Long sellerId);
 }
