@@ -7,8 +7,6 @@ import com.greenify.dto.productDtos.ProductDto;
 import com.greenify.dto.productDtos.ProductPartialUpdateDto;
 import com.greenify.dto.productDtos.ProductSearchDto;
 import com.greenify.dto.productDtos.ProductUpdateDto;
-import com.greenify.entities.Category;
-import com.greenify.entities.Product;
 
 public interface ProductService {
 	

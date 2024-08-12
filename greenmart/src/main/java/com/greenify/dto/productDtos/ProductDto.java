@@ -2,6 +2,8 @@ package com.greenify.dto.productDtos;
 
 import java.math.BigDecimal;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,6 +25,6 @@ public class ProductDto {
 
 	private Long categoryId;
 	
-	private String imageUrl;
+	private MultipartFile imageUrl;
 
 }

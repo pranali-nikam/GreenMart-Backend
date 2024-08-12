@@ -14,4 +14,6 @@ public class RestExceptionHandler {
 	public ResponseEntity<Object> handleBusinessException(BusinessException businessException){
 		return new ResponseEntity<Object>(businessException.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
+	
+	
 }

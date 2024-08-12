@@ -1,14 +1,22 @@
 package com.greenify.service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.greenify.dao.ProductDao;
 import com.greenify.dto.categoryDtos.CategoryNameDto;
@@ -20,6 +28,8 @@ import com.greenify.dto.productDtos.ProductUpdateDto;
 import com.greenify.entities.Category;
 import com.greenify.entities.Product;
 import com.greenify.entities.Seller;
+import com.greenify.exceptions.BusinessException;
+import com.greenify.handler.ImageFileUploadHandler;
 
 @Service
 @Transactional
@@ -30,11 +40,33 @@ public class ProductServiceImpl implements ProductService {
 	
 	@Autowired
 	private ModelMapper modelMapper;
+	
+	@Value("${image.upload.dir}")
+    private String uploadDirPath;
+	
 
 	@Override
 	public ProductDto addProduct(ProductDto productDto,Long sellerId) {
-		Product product = modelMapper.map(productDto, Product.class);
+		//save image to file and store its path in db
 		
+        Product product = modelMapper.map(productDto, Product.class);
+        
+        
+        // Handle file upload for the main image
+        MultipartFile file = productDto.getImageUrl();
+        if (file != null && !file.isEmpty()) {
+            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+            Path filePath = Paths.get(uploadDirPath, fileName).toAbsolutePath().normalize();
+            try {
+                Files.createDirectories(filePath.getParent()); // Ensure the directory exists
+				Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e) {
+				throw new BusinessException("Unable to Upload Image");
+			}
+            product.setImageUrl(fileName); // Set the file path in the product entity
+        }
+
+    		
 		Category category = new Category();
 		category.setCategoryId(productDto.getCategoryId());
 		product.setCategory(category);
@@ -44,6 +76,7 @@ public class ProductServiceImpl implements ProductService {
 		product.setSeller(seller);
 		
 		Product savedProduct = productDao.save(product);
+		
 		ProductDto dto = modelMapper.map(savedProduct, ProductDto.class);
 		dto.setCategoryId(savedProduct.getCategory().getCategoryId());
 		return dto;
@@ -61,7 +94,7 @@ public class ProductServiceImpl implements ProductService {
 			 .description(product.getDescription())
 			 .stock(product.getStock())
 			 .categoryName(product.getCategory().getCategoryName())
-			 .imageUrl(product.getImageUrl())
+			 .imageUrl(uploadDirPath + product.getImageUrl())
 			 .build();
 			productDetailsDtoList.add(productDetailsDto);
 		 });
