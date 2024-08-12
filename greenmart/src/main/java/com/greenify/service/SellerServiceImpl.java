@@ -2,6 +2,7 @@ package com.greenify.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import com.greenify.dao.SellerDao;
 import com.greenify.dao.UserDao;
 import com.greenify.dto.sellerDtos.SellerDetailsDto;
 import com.greenify.dto.sellerDtos.SellerDto;
+import com.greenify.dto.sellerDtos.SellerProfileDto;
+import com.greenify.dto.userDtos.ProfileDto;
 import com.greenify.entities.Seller;
 import com.greenify.entities.User;
 import com.greenify.enums.Role;
@@ -82,6 +85,29 @@ public class SellerServiceImpl implements SellerService {
 	public int unblockSeller(Long sellerId) {
 		
 		return userDao.unblockSeller(sellerId);
+	}
+
+	@Override
+	public SellerProfileDto getSellerProfile(Long sellerId) {
+		
+		User user = userDao.findBySellerId(sellerId);
+		
+		
+
+		    
+		    SellerProfileDto sellerProfileDto = SellerProfileDto.builder()
+		        .name(user.getFirstName()+" "+user.getLastName())
+		        .email(user.getEmail())
+		        .mobileNumber(user.getMobileNumber())
+		        .dob(user.getDob())
+		        .storeName(user.getSeller().getStoreName())
+		        .address(user.getSeller().getAddress())
+		        .phone(user.getSeller().getPhone())
+		        .gstinNumber(user.getSeller().getGstinNumber())
+		        .build();
+		
+		return sellerProfileDto;
+		
 	}
 
 }

@@ -20,6 +20,7 @@ import com.greenify.dto.orderDtos.OrdersStatusDto;
 import com.greenify.dto.productDtos.ProductDetailsDto;
 import com.greenify.dto.sellerDtos.SellerDetailsDto;
 import com.greenify.dto.userDtos.CompleteUserDetailsDto;
+import com.greenify.dto.userDtos.ProfileDto;
 import com.greenify.enums.Status;
 import com.greenify.service.OrderService;
 import com.greenify.service.ProductService;
@@ -112,4 +113,11 @@ public class AdminController {
 		Pageable pageable = PageRequest.of(page, size);
 		return orderService.getOrdersByStatus(pageable,Status.valueOf(status.toUpperCase()));
 	}
+  
+	@GetMapping("/getAdminProfile/{userId}")
+	@ResponseStatus(HttpStatus.OK)
+	public ProfileDto getAdminProfile(@PathVariable Long userId){
+		return userService.getUserProfile(userId);
+	}
+	
 }
