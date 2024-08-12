@@ -31,5 +31,10 @@ public interface OrderDao extends JpaRepository<Order, Long> {
 	@Transactional
 	@Query("UPDATE Order o SET o.status = :status WHERE o.orderId = :orderId")
 	void updateOrderStatus(@Param("orderId") Long orderId, Status status);
+	
+	@Query("SELECT o FROM Order o WHERE o.user.userId = :userId")
+	List<Order> findAllOrderByUserId(Long userId);
+	
+
 
 }

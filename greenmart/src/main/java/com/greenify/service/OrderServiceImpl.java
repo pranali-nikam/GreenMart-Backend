@@ -22,6 +22,7 @@ import com.greenify.dto.orderDtos.OrderStatusCountDto;
 import com.greenify.dto.orderDtos.OrdersStatusDto;
 import com.greenify.dto.orderDtos.PlaceOrderDto;
 import com.greenify.dto.orderDtos.ShippingDetailDto;
+import com.greenify.dto.orderDtos.UserOrderDto;
 import com.greenify.entities.Order;
 import com.greenify.entities.OrderItem;
 import com.greenify.entities.PaymentDetail;
@@ -229,4 +230,31 @@ public class OrderServiceImpl implements OrderService {
 
 		orderDao.updateOrderStatus(orderId, status);
 	}
+	
+	@Override
+	public List<UserOrderDto> getOrdersByUserId(Long userId) {
+		List<UserOrderDto> userOrderDtoList = new ArrayList<UserOrderDto>();
+		
+		List<Order> orderList = orderDao.findAllOrderByUserId(userId);
+		
+		orderList.forEach(order ->{
+			for (OrderItem orderItem : order.getOrderItems()) { 
+			UserOrderDto userOrderDto  = UserOrderDto.builder()
+					.productName(orderItem.getProduct().getProductName())
+					.description(orderItem.getProduct().getDescription())
+					.imageUrl(orderItem.getProduct().getImageUrl())
+					.price(orderItem.getPrice())
+					.orderDate(order.getOrderDate())
+					.orderId(order.getOrderId())
+					.totalAmount(order.getTotalAmount())
+					.status(order.getStatus())
+					.build();
+			userOrderDtoList.add(userOrderDto);
+			}
+		});
+		
+		
+		return userOrderDtoList;
+	}
+
 }
