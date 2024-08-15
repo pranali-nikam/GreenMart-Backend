@@ -34,5 +34,11 @@ public interface UserDao extends JpaRepository<User, Long> {
     User findBySellerId(Long sellerId);
     
 	Optional<User> findByEmailAndPassword(String email, String pwd);
+	
+	@Query("SELECT COUNT(u) FROM User u WHERE u.role = 'CUSTOMER' ")
+	Long countofUsers();
+	
+	@Query("SELECT COUNT(u) FROM User u WHERE u.role = 'SELLER' ")
+	Long countofSellers();
 
 }

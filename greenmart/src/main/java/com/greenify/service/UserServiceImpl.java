@@ -92,44 +92,44 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public ProfileDto getUserProfile(Long userId) {
 		User user = userDao.findById(userId).get();
-		ShippingAddress shippingAddress = user.getShippingAddress().get(0);
-		ProfileDto profileDto = ProfileDto.builder()
-				.name(user.getFirstName() + " " + user.getLastName())
-				.mobileNumber(user.getMobileNumber())
-				.email(user.getEmail())
-				.dob(user.getDob())
-				.shippingDetail(ShippingDetailDto.builder()
-						.addressLine1(shippingAddress.getAddressLine1())
-						.addressLine2(shippingAddress.getAddressLine2())
-						.city(shippingAddress.getCity())
-						.country(shippingAddress.getCountry())
-						.state(shippingAddress.getState())
-						.zipcode(shippingAddress.getZipcode())
-						.build())
-				.build();
+		List<ShippingAddress> shippingAddressList = user.getShippingAddress();
 
+		if (!shippingAddressList.isEmpty()) {
+			ShippingAddress shippingAddress = shippingAddressList.get(0);
+			ProfileDto profileDto = ProfileDto.builder().name(user.getFirstName() + " " + user.getLastName())
+					.mobileNumber(user.getMobileNumber()).email(user.getEmail()).dob(user.getDob())
+					.shippingDetail(ShippingDetailDto.builder().addressLine1(shippingAddress.getAddressLine1())
+							.addressLine2(shippingAddress.getAddressLine2()).city(shippingAddress.getCity())
+							.country(shippingAddress.getCountry()).state(shippingAddress.getState())
+							.zipcode(shippingAddress.getZipcode()).build())
+					.build();
+			return profileDto;
+
+		}
+
+		ProfileDto profileDto = ProfileDto.builder().name(user.getFirstName() + " " + user.getLastName())
+				.mobileNumber(user.getMobileNumber()).email(user.getEmail()).dob(user.getDob())
+				.shippingDetail(ShippingDetailDto.builder().build()).build();
 		return profileDto;
+
 	}
 
 	@Override
 	public LoginDto authenticateUser(SignInRequest request) {
-		
+
 		User userEntity = userDao.findByEmailAndPassword(request.getEmail(), request.getPassword())
 				.orElseThrow(() -> new BusinessException("Invalid Email Or Password"));
 
 		if (userEntity.getRole() == Role.valueOf("CUSTOMER")) {
-			
+
 			return LoginDto.builder()
 					.userDto(UserDto.builder().email(userEntity.getEmail()).firstName(userEntity.getFirstName())
 							.lastName(userEntity.getLastName()).dob(userEntity.getDob())
 							.mobileNumber(userEntity.getMobileNumber()).password(userEntity.getPassword()).build())
-					.isBlocked(userEntity.getIsBlocked())
-					.role(userEntity.getRole())
-					.id(userEntity.getUserId())
-					.build();
-			
+					.isBlocked(userEntity.getIsBlocked()).role(userEntity.getRole()).id(userEntity.getUserId()).build();
+
 		} else if (userEntity.getRole() == Role.valueOf("SELLER")) {
-			
+
 			return LoginDto.builder().sellerDto(SellerDto.builder()
 
 					.user(UserDto.builder().email(userEntity.getEmail()).firstName(userEntity.getFirstName())
@@ -137,20 +137,25 @@ public class UserServiceImpl implements UserService {
 							.mobileNumber(userEntity.getMobileNumber()).password(userEntity.getPassword()).build())
 					.address(userEntity.getSeller().getAddress()).gstinNumber(userEntity.getSeller().getGstinNumber())
 					.storeName(userEntity.getSeller().getStoreName()).phone(userEntity.getSeller().getPhone()).build())
-					.isBlocked(userEntity.getIsBlocked())
-					.role(userEntity.getRole())
-					.id(userEntity.getSeller().getSellerId())
-					.build();
+					.isBlocked(userEntity.getIsBlocked()).role(userEntity.getRole())
+					.id(userEntity.getSeller().getSellerId()).build();
 		} else {
 			return LoginDto.builder()
 					.profileDto(ProfileDto.builder().name(userEntity.getFirstName() + " " + userEntity.getLastName())
 							.dob(userEntity.getDob()).email(userEntity.getEmail())
 							.mobileNumber(userEntity.getMobileNumber()).build())
-					.isBlocked(userEntity.getIsBlocked())
-					.role(userEntity.getRole())
-					.id(userEntity.getUserId())
-					.build();
+					.isBlocked(userEntity.getIsBlocked()).role(userEntity.getRole()).id(userEntity.getUserId()).build();
 		}
+	}
+
+	@Override
+	public Long getCountofUsers() {
+		return userDao.countofUsers();
+	}
+
+	@Override
+	public Long getCountofSellers() {
+		return userDao.countofSellers();
 	}
 
 }

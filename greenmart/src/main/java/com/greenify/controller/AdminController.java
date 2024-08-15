@@ -116,4 +116,17 @@ public class AdminController {
 		return userService.getUserProfile(userId);
 	}
 	
+	
+	@GetMapping("/countOfUsers")
+	@ResponseStatus(HttpStatus.OK)
+	public Long countOfUsers() {
+		return userService.getCountofUsers();
+	}
+	
+	@GetMapping("/countOfSellers")
+	@ResponseStatus(HttpStatus.OK)
+	public Long countOfSellers() {
+		return userService.getCountofSellers();
+	}
+	
 }

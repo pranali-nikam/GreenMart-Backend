@@ -49,7 +49,7 @@ public class ProductController {
 		return productService.getAllProductByCategoryId(categoryId);
 	}
 	
-	@GetMapping("/products/{productName}")
+	@GetMapping("/search/{productName}")
 	@ResponseStatus(HttpStatus.OK)
 	List<ProductSearchDto> getProductByProductName(@PathVariable String productName){
 		return productService.getProductByProductName(productName);
