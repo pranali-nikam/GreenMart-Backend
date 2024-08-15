@@ -50,7 +50,7 @@ public class Seller extends BaseEntity {
 	private List<Product> product;
 	
 	@OneToMany(mappedBy = "seller",cascade = CascadeType.ALL,orphanRemoval = true)
-	private List<Order> order;
+	private List<OrderItem> orderItem;
 
 	
 	

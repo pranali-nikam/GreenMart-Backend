@@ -27,16 +27,12 @@ public class PlaceOrderDto {
 	private LocalDate orderDate;
 	
 	private BigDecimal totalAmount;
-		
-	private Status status;
-	
+			
 	private ShippingDetailDto shippingAddress;
 		
 	private List<OrderItemDto> orderItems;
 	
 	private PaymentDetailDto paymentDetails;
-	
-	private Long sellerId;
-		
- 
+			
+
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.greenify.dto.orderDtos.OrderItemStatusDto;
 import com.greenify.dto.orderDtos.OrderStatusCountDto;
 import com.greenify.dto.orderDtos.OrdersStatusDto;
 import com.greenify.dto.productDtos.ProductDetailsDto;
@@ -23,6 +24,7 @@ import com.greenify.dto.sellerDtos.SellerDetailsDto;
 import com.greenify.dto.userDtos.CompleteUserDetailsDto;
 import com.greenify.dto.userDtos.ProfileDto;
 import com.greenify.enums.Status;
+import com.greenify.service.OrderItemService;
 import com.greenify.service.OrderService;
 import com.greenify.service.ProductService;
 import com.greenify.service.SellerService;
@@ -45,6 +47,9 @@ public class AdminController {
 
 	@Autowired
 	private OrderService orderService;
+	
+	@Autowired
+	private OrderItemService orderItemService;
 
 	@GetMapping("/getSellers")
 	@ResponseStatus(HttpStatus.OK)
@@ -70,51 +75,39 @@ public class AdminController {
 		return userService.getUsers();
 	}
 
-	@PatchMapping("/blockUser/{userId}")
+	@PatchMapping("/blockUnblockUser/{userId}")
 	@ResponseStatus(HttpStatus.OK)
-	public int blockUser(@PathVariable Long userId) {
-		return userService.blockUser(userId);
+	public int blockUnblockUser(@PathVariable Long userId,@RequestParam("isBlocked") Boolean isBlocked) {
+		return userService.blockUnblockUser(userId,isBlocked);
 	}
 
-	@PatchMapping("/unblockUser/{userId}")
+	@PatchMapping("/blockUnblockSeller/{sellerId}")
 	@ResponseStatus(HttpStatus.OK)
-	public int unblockUser(@PathVariable Long userId) {
-		return userService.unblockUser(userId);
+	public int blockSeller(@PathVariable Long sellerId,@RequestParam("isBlocked") Boolean isBlocked) {
+		return sellerService.blockUnblockSeller(sellerId,isBlocked);
 	}
 
-	@PatchMapping("/blockSeller/{sellerId}")
+	@GetMapping("/count")
 	@ResponseStatus(HttpStatus.OK)
-	public int blockSeller(@PathVariable Long sellerId) {
-		return sellerService.blockSeller(sellerId);
-	}
+	public Long countOrders() {
 
-	@PatchMapping("/unblockSeller/{sellerId}")
-	@ResponseStatus(HttpStatus.OK)
-	public int unblockSeller(@PathVariable Long sellerId) {
-		return sellerService.unblockSeller(sellerId);
-	}
-
-	@GetMapping("/countOfStatus")
-	@ResponseStatus(HttpStatus.OK)
-	public OrderStatusCountDto countOrdersByStatus() {
-
-		return orderService.countOrdersByStatus();
+		return orderService.countOrders();
 
 	}
 
 	@PatchMapping("/updateOrderByStatus")
 	@ResponseStatus(HttpStatus.OK)
 	public void updateOrderByStatus(@RequestParam Long orderId, @RequestParam String status) {
-		orderService.updateOrderByStatus(orderId, Status.valueOf(status.toUpperCase()));
+		orderItemService.updateOrderByStatus(orderId, Status.valueOf(status.toUpperCase()));
 	}
 
 	@GetMapping("/getOrdersByStatus")
 	@ResponseStatus(HttpStatus.OK)
-	public Page<OrdersStatusDto> getOrdersByStatus(@RequestParam(defaultValue = "0")int page,
-			@RequestParam(defaultValue = "20")int size,
+	public Page<OrderItemStatusDto> getOrdersByStatus(@RequestParam(defaultValue = "0")int page,
+			@RequestParam(defaultValue = "5")int size,
 			String status) {
 		Pageable pageable = PageRequest.of(page, size);
-		return orderService.getOrdersByStatus(pageable,Status.valueOf(status.toUpperCase()));
+		return orderItemService.getOrdersByStatus(pageable,Status.valueOf(status.toUpperCase()));
 	}
   
 	@GetMapping("/getAdminProfile/{userId}")

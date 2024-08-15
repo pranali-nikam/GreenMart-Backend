@@ -46,9 +46,9 @@ public class CartController {
 		
 	}
 	
-	@DeleteMapping("/remove")
-	public ResponseEntity<?> removeProductFromCart(@RequestBody @Valid CartDto cartDto){
-		cartService.removeProductFromCart(cartDto);
+	@DeleteMapping("/remove/{userId}/{productId}")
+	public ResponseEntity<?> removeProductFromCart(@PathVariable("userId") Long userId , @PathVariable("productId") Long productId){
+		cartService.removeProductFromCart(CartDto.builder().productId(productId).userId(userId).build());
 		return ResponseEntity.ok("Product removed from cart sucsessfully");
  }
 }

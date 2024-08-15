@@ -20,7 +20,7 @@ import com.greenify.service.OrderService;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("api/order")
+@RequestMapping("api/orders")
 public class OrderController {
 
 	@Autowired
@@ -34,7 +34,7 @@ public class OrderController {
 	
 	@GetMapping("/getAllOrderById/{userId}")
 	@ResponseStatus(HttpStatus.OK)
-	public List<UserOrderDto> getAllOrdersByUserId(@PathVariable Long userId) {
+	public List<PlaceOrderDto> getAllOrdersByUserId(@PathVariable Long userId) {
 		return orderService.getOrdersByUserId(userId);
 	}
 

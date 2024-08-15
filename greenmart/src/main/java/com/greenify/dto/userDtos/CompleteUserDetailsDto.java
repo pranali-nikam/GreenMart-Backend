@@ -13,6 +13,8 @@ import lombok.ToString;
 @NoArgsConstructor
 public class CompleteUserDetailsDto {
 
+	private Long userId;
+	
 	private String firstName;
 	
 	private String lastName;

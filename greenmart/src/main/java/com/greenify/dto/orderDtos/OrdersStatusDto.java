@@ -28,9 +28,7 @@ public class OrdersStatusDto {
     private LocalDate orderDate;
 	
 	private BigDecimal totalAmount;
-		
-	private Status status;
-	
+			
 	private ShippingDetailDto shippingAddress;
 		
 	private List<OrderItemDto> orderItems;

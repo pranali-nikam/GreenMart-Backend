@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.greenify.dto.orderDtos.OrderItemStatusCountDto;
+import com.greenify.dto.orderDtos.OrderItemStatusDto;
 import com.greenify.dto.orderDtos.OrderStatusCountDto;
 import com.greenify.dto.orderDtos.OrdersStatusDto;
 import com.greenify.dto.productDtos.ProductDetailsDto;
@@ -24,6 +26,7 @@ import com.greenify.dto.productDtos.ProductUpdateDto;
 import com.greenify.dto.sellerDtos.SellerDto;
 import com.greenify.dto.sellerDtos.SellerProfileDto;
 import com.greenify.enums.Status;
+import com.greenify.service.OrderItemService;
 import com.greenify.service.OrderService;
 import com.greenify.service.ProductService;
 import com.greenify.service.SellerService;
@@ -42,6 +45,9 @@ public class SellerController {
 
 	@Autowired
 	private OrderService orderService;
+	
+	@Autowired
+	private OrderItemService orderItemService;
 
 	@PostMapping("/register")
 	@ResponseStatus(HttpStatus.CREATED)
@@ -77,16 +83,16 @@ public class SellerController {
 
 	@GetMapping("/countOfStatus/{sellerId}")
 	@ResponseStatus(HttpStatus.OK)
-	public OrderStatusCountDto countOrdersByStatusAndSellerId(@PathVariable Long sellerId) {
+	public OrderItemStatusCountDto countOrdersByStatusAndSellerId(@PathVariable Long sellerId) {
 
-		return orderService.countOrdersByStatusAndSellerId(sellerId);
+		return orderItemService.countOrdersByStatusAndSellerId(sellerId);
 
 	}
 
 	@GetMapping("/getOrdersByStatus/{sellerId}")
 	@ResponseStatus(HttpStatus.OK)
-	public List<OrdersStatusDto> getOrdersByStatusAndSellerId(@PathVariable Long sellerId, String status) {
-		return orderService.getOrdersByStatusAndSellerId(sellerId, Status.valueOf(status.toUpperCase()));
+	public List<OrderItemStatusDto> getOrdersByStatusAndSellerId(@PathVariable Long sellerId, String status) {
+		return orderItemService.getOrdersByStatusAndSellerId(sellerId, Status.valueOf(status.toUpperCase()));
 	}
 
 	
@@ -101,6 +107,6 @@ public class SellerController {
 	@PatchMapping("/updateOrderByStatus")
 	@ResponseStatus(HttpStatus.OK)
 	public void updateOrderByStatus(@RequestParam Long orderId, @RequestParam String status) {
-		 orderService.updateOrderByStatus(orderId, Status.valueOf(status.toUpperCase()));
+		orderItemService.updateOrderByStatus(orderId, Status.valueOf(status.toUpperCase()));
 	}
 }

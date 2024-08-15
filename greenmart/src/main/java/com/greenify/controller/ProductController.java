@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.greenify.dto.categoryDtos.CategoryNameDto;
+import com.greenify.dto.productDtos.ProductDetailsDto;
 import com.greenify.dto.productDtos.ProductDto;
 import com.greenify.dto.productDtos.ProductSearchDto;
 import com.greenify.service.ProductService;
@@ -52,6 +53,12 @@ public class ProductController {
 	@ResponseStatus(HttpStatus.OK)
 	List<ProductSearchDto> getProductByProductName(@PathVariable String productName){
 		return productService.getProductByProductName(productName);
+	}
+	
+	@GetMapping("/getProductById/{productId}")
+	@ResponseStatus(HttpStatus.OK)
+	ProductDetailsDto getProductByProductId(@PathVariable Long productId){
+		return productService.getProductByProductId(productId);
 	}
 	
 	

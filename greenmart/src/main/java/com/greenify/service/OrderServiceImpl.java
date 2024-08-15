@@ -20,6 +20,7 @@ import com.greenify.dao.ShippingAddressDao;
 import com.greenify.dto.orderDtos.OrderItemDto;
 import com.greenify.dto.orderDtos.OrderStatusCountDto;
 import com.greenify.dto.orderDtos.OrdersStatusDto;
+import com.greenify.dto.orderDtos.PaymentDetailDto;
 import com.greenify.dto.orderDtos.PlaceOrderDto;
 import com.greenify.dto.orderDtos.ShippingDetailDto;
 import com.greenify.dto.orderDtos.UserOrderDto;
@@ -68,12 +69,9 @@ public class OrderServiceImpl implements OrderService {
 		User user = new User();
 		user.setUserId(userId);
 
-		Seller seller = new Seller();
-		seller.setSellerId(placeOrderDto.getSellerId());
-
 		Order order = Order.builder().orderDate(placeOrderDto.getOrderDate())
-				.shippingAddress(getShippingAddress(placeOrderDto, user)).status(placeOrderDto.getStatus())
-				.totalAmount(placeOrderDto.getTotalAmount()).user(user).seller(seller).build();
+				.shippingAddress(getShippingAddress(placeOrderDto, user)).totalAmount(placeOrderDto.getTotalAmount())
+				.user(user).build();
 
 		return order;
 	}
@@ -101,12 +99,16 @@ public class OrderServiceImpl implements OrderService {
 
 		orderItemDtos.forEach(orderItemDto -> {
 
+			Seller seller = new Seller();
+			seller.setSellerId(orderItemDto.getSellerId());
+
 			Product product = new Product();
 
 			if (isStockAvailable(orderItemDto.getProductId())) {
 				product.setProductId(orderItemDto.getProductId());
 				OrderItem orderItem = OrderItem.builder().price(orderItemDto.getPrice()).product(product)
-						.quantity(orderItemDto.getQuantity()).order(order).build();
+						.quantity(orderItemDto.getQuantity()).order(order).status(orderItemDto.getStatus())
+						.seller(seller).build();
 				decrementStockCount(orderItemDto.getProductId(), orderItemDto.getQuantity());
 				orderItems.add(orderItem);
 			} else {
@@ -134,127 +136,51 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public OrderStatusCountDto countOrdersByStatusAndSellerId(Long sellerId) {
+	public Long countOrders() {
 
-		List<List<String>> statusCountList = orderDao.countOfOrderByStatusAndSellerId(sellerId);
+		return orderDao.count();
 
-		Map<String, Long> countMap = statusCountList.stream()
-				.collect(Collectors.toMap(e -> e.get(0), e -> Long.parseLong(e.get(1))));
-
-		return OrderStatusCountDto.builder().pendingCount(countMap.get(Status.PENDING.name()))
-				.shippedCount(countMap.get(Status.SHIPPED.name())).deliveredCount(countMap.get(Status.DELIVERED.name()))
-				.build();
 	}
 
 	@Override
-	public List<OrdersStatusDto> getOrdersByStatusAndSellerId(Long sellerId, Status status) {
+	public List<PlaceOrderDto> getOrdersByUserId(Long userId) {
+		List<PlaceOrderDto> userOrderDtoList = new ArrayList<PlaceOrderDto>();
 
-		List<OrdersStatusDto> ordersStatusDtoList = new ArrayList<OrdersStatusDto>();
-
-		List<Order> orderList = orderDao.findAllOrdersBySellerIdAndStatus(sellerId, status);
+		List<Order> orderList = orderDao.findAllOrderByUserId(userId);
 
 		orderList.forEach(order -> {
-			OrdersStatusDto ordersStatusDto = OrdersStatusDto.builder().orderId(order.getOrderId())
-					.orderDate(order.getOrderDate()).paymentMethod(order.getPaymentDetails().getPaymentMethod())
-					.totalAmount(order.getTotalAmount()).status(order.getStatus())
-					.shippingAddress(ShippingDetailDto.builder()
-							.addressLine1(order.getShippingAddress().getAddressLine1())
-							.addressLine2(order.getShippingAddress().getAddressLine2())
-							.city(order.getShippingAddress().getCity()).country(order.getShippingAddress().getCountry())
-							.mobileNumber(order.getShippingAddress().getMobileNumber())
-							.state(order.getShippingAddress().getState())
-							.zipcode(order.getShippingAddress().getZipcode())
-							.shippingId(order.getShippingAddress().getShippingId()).build())
-					.orderItems(fetchDtoFromOrderItem(order.getOrderItems())).build();
-			ordersStatusDtoList.add(ordersStatusDto);
-		});
 
-		return ordersStatusDtoList;
-	}
-
-	private List<OrderItemDto> fetchDtoFromOrderItem(List<OrderItem> orderItem) {
-
-		List<OrderItemDto> orderItemDtos = new ArrayList<OrderItemDto>();
-
-		orderItem.forEach(order -> {
-
-			OrderItemDto orderItemDto = OrderItemDto.builder().price(order.getPrice())
-					.productId(order.getProduct().getProductId()).quantity(order.getQuantity()).build();
-			orderItemDtos.add(orderItemDto);
-
-		});
-		return orderItemDtos;
-	}
-
-	@Override
-	public Page<OrdersStatusDto> getOrdersByStatus(Pageable pageable ,Status status) {
-
-		List<OrdersStatusDto> ordersStatusDtoList = new ArrayList<OrdersStatusDto>();
-
-		Page<Order> orderPage = orderDao.findAllOrdersByStatus(pageable,status);
-
-		orderPage.getContent().forEach(order -> {
-			OrdersStatusDto ordersStatusDto = OrdersStatusDto.builder().orderId(order.getOrderId())
-					.orderDate(order.getOrderDate()).paymentMethod(order.getPaymentDetails().getPaymentMethod())
-					.shippingAddress(ShippingDetailDto.builder()
-							.addressLine1(order.getShippingAddress().getAddressLine1())
-							.addressLine2(order.getShippingAddress().getAddressLine2())
-							.city(order.getShippingAddress().getCity()).country(order.getShippingAddress().getCountry())
-							.mobileNumber(order.getShippingAddress().getMobileNumber())
-							.state(order.getShippingAddress().getState())
-							.zipcode(order.getShippingAddress().getZipcode())
-							.shippingId(order.getShippingAddress().getShippingId()).build())
-					.orderItems(fetchDtoFromOrderItem(order.getOrderItems())).build();
-			ordersStatusDtoList.add(ordersStatusDto);
+			userOrderDtoList
+					.add(PlaceOrderDto.builder().orderDate(order.getOrderDate())
+							.orderItems(mapOrderItemToOrderItemDto(order))
+							.paymentDetails(PaymentDetailDto
+									.builder().paymentMethod(order.getPaymentDetails().getPaymentMethod())
+									.amount(order.getPaymentDetails().getAmount()).build())
+							.shippingAddress(ShippingDetailDto.builder()
+									.addressLine1(order.getShippingAddress().getAddressLine1())
+									.addressLine2(order.getShippingAddress().getAddressLine2())
+									.city(order.getShippingAddress().getCity())
+									.state(order.getShippingAddress().getState())
+									.country(order.getShippingAddress().getCountry())
+									.zipcode(order.getShippingAddress().getZipcode())
+									.mobileNumber(order.getShippingAddress().getMobileNumber()).build())
+							.totalAmount(order.getTotalAmount()).build());
 
 		});
 
-		return new PageImpl<OrdersStatusDto>(ordersStatusDtoList,pageable,orderPage.getTotalElements());
-	}
-
-	@Override
-	public OrderStatusCountDto countOrdersByStatus() {
-
-		List<List<String>> statusCountList = orderDao.countOrderByStatus();
-
-		Map<String, Long> countMap = statusCountList.stream()
-				.collect(Collectors.toMap(e -> e.get(0), e -> Long.parseLong(e.get(1))));
-
-		return OrderStatusCountDto.builder().pendingCount(countMap.get(Status.PENDING.name()))
-				.shippedCount(countMap.get(Status.SHIPPED.name())).deliveredCount(countMap.get(Status.DELIVERED.name()))
-				.build();
-	}
-
-	@Override
-	public void updateOrderByStatus(Long orderId, Status status) {
-
-		orderDao.updateOrderStatus(orderId, status);
-	}
-	
-	@Override
-	public List<UserOrderDto> getOrdersByUserId(Long userId) {
-		List<UserOrderDto> userOrderDtoList = new ArrayList<UserOrderDto>();
-		
-		List<Order> orderList = orderDao.findAllOrderByUserId(userId);
-		
-		orderList.forEach(order ->{
-			for (OrderItem orderItem : order.getOrderItems()) { 
-			UserOrderDto userOrderDto  = UserOrderDto.builder()
-					.productName(orderItem.getProduct().getProductName())
-					.description(orderItem.getProduct().getDescription())
-					.imageUrl(orderItem.getProduct().getImageUrl())
-					.price(orderItem.getPrice())
-					.orderDate(order.getOrderDate())
-					.orderId(order.getOrderId())
-					.totalAmount(order.getTotalAmount())
-					.status(order.getStatus())
-					.build();
-			userOrderDtoList.add(userOrderDto);
-			}
-		});
-		
-		
 		return userOrderDtoList;
+	}
+
+	private List<OrderItemDto> mapOrderItemToOrderItemDto(Order order) {
+		List<OrderItemDto> orderItemDtos = new ArrayList<>();
+
+		for (OrderItem orderItem : order.getOrderItems()) {
+			orderItemDtos.add(OrderItemDto.builder().price(orderItem.getPrice())
+					.productId(orderItem.getProduct().getProductId()).quantity(orderItem.getQuantity())
+					.sellerId(orderItem.getSeller().getSellerId()).status(orderItem.getStatus()).build());
+		}
+
+		return orderItemDtos;
 	}
 
 }

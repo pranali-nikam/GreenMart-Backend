@@ -13,9 +13,7 @@ public interface SellerService {
 	
 	public List<SellerDetailsDto> getSellerDetails();
 	
-	public int blockSeller(Long sellerId);
-	
-	public int unblockSeller(Long sellerId);
-	
+	public int blockUnblockSeller(Long sellerId, Boolean isBlocked);
+		
 	public SellerProfileDto getSellerProfile(Long sellerId);
 }

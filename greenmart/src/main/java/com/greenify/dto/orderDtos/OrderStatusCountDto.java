@@ -14,10 +14,10 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 public class OrderStatusCountDto {
-
+	
 	private Long pendingCount;
-	
+
 	private Long shippedCount;
-	
-	private Long deliveredCount; 
+
+	private Long deliveredCount;
 }

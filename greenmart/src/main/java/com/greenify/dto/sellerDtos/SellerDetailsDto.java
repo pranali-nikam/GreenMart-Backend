@@ -15,6 +15,8 @@ import lombok.ToString;
 @AllArgsConstructor
 public class SellerDetailsDto {
 	
+	private Long sellerId;
+	
 	private String name;
 	
 	private String email;
