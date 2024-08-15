@@ -23,6 +23,8 @@ import com.greenify.dto.orderDtos.OrdersStatusDto;
 import com.greenify.dto.orderDtos.PaymentDetailDto;
 import com.greenify.dto.orderDtos.PlaceOrderDto;
 import com.greenify.dto.orderDtos.ShippingDetailDto;
+import com.greenify.dto.orderDtos.ShowOrderDto;
+import com.greenify.dto.orderDtos.ShowOrderItemsDto;
 import com.greenify.dto.orderDtos.UserOrderDto;
 import com.greenify.entities.Order;
 import com.greenify.entities.OrderItem;
@@ -143,15 +145,15 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public List<PlaceOrderDto> getOrdersByUserId(Long userId) {
-		List<PlaceOrderDto> userOrderDtoList = new ArrayList<PlaceOrderDto>();
+	public List<ShowOrderDto> getOrdersByUserId(Long userId) {
+		List<ShowOrderDto> userOrderDtoList = new ArrayList<ShowOrderDto>();
 
 		List<Order> orderList = orderDao.findAllOrderByUserId(userId);
 
 		orderList.forEach(order -> {
 
 			userOrderDtoList
-					.add(PlaceOrderDto.builder().orderDate(order.getOrderDate())
+					.add(ShowOrderDto.builder().orderDate(order.getOrderDate())
 							.orderItems(mapOrderItemToOrderItemDto(order))
 							.paymentDetails(PaymentDetailDto
 									.builder().paymentMethod(order.getPaymentDetails().getPaymentMethod())
@@ -171,13 +173,15 @@ public class OrderServiceImpl implements OrderService {
 		return userOrderDtoList;
 	}
 
-	private List<OrderItemDto> mapOrderItemToOrderItemDto(Order order) {
-		List<OrderItemDto> orderItemDtos = new ArrayList<>();
+	private List<ShowOrderItemsDto> mapOrderItemToOrderItemDto(Order order) {
+		List<ShowOrderItemsDto> orderItemDtos = new ArrayList<>();
 
 		for (OrderItem orderItem : order.getOrderItems()) {
-			orderItemDtos.add(OrderItemDto.builder().price(orderItem.getPrice())
+			orderItemDtos.add(ShowOrderItemsDto.builder().price(orderItem.getPrice())
 					.productId(orderItem.getProduct().getProductId()).quantity(orderItem.getQuantity())
-					.sellerId(orderItem.getSeller().getSellerId()).status(orderItem.getStatus()).build());
+					.sellerId(orderItem.getSeller().getSellerId()).status(orderItem.getStatus())
+					.productName(orderItem.getProduct().getProductName())
+					.build());
 		}
 
 		return orderItemDtos;

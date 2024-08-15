@@ -25,6 +25,9 @@ public interface UserService {
 	
 	public LoginDto authenticateUser(SignInRequest request);
 
+	public Long getCountofUsers();
 
+	public Long getCountofSellers();
 
+	
 }

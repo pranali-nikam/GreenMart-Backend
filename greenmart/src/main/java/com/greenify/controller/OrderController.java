@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.greenify.dto.orderDtos.PlaceOrderDto;
+import com.greenify.dto.orderDtos.ShowOrderDto;
 import com.greenify.dto.orderDtos.UserOrderDto;
 import com.greenify.service.OrderService;
 
@@ -34,7 +35,7 @@ public class OrderController {
 	
 	@GetMapping("/getAllOrderById/{userId}")
 	@ResponseStatus(HttpStatus.OK)
-	public List<PlaceOrderDto> getAllOrdersByUserId(@PathVariable Long userId) {
+	public List<ShowOrderDto> getAllOrdersByUserId(@PathVariable Long userId) {
 		return orderService.getOrdersByUserId(userId);
 	}
 
