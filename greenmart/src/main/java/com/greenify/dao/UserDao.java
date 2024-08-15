@@ -20,28 +20,19 @@ public interface UserDao extends JpaRepository<User, Long> {
 	
 	@Modifying
 	@Transactional
-	@Query("UPDATE User u SET u.isBlocked = true WHERE u.userId = :userId")
-	int blockUser(Long userId);
+	@Query("UPDATE User u SET u.isBlocked = :isBlocked WHERE u.userId = :userId")
+	int blockUnblockUser(@Param("userId")Long userId, @Param("isBlocked")Boolean isBlocked);
 	
 	@Modifying
 	@Transactional
-	@Query("UPDATE User u SET u.isBlocked = false WHERE u.userId = :userId")
-	int unblockUser(Long userId);
+	@Query("UPDATE User u SET u.isBlocked = :isBlocked WHERE u.userId = (SELECT s.user.userId FROM Seller s WHERE s.sellerId = :sellerId )")
+	int blockUnblockSeller(@Param("sellerId")Long sellerId, @Param("isBlocked")Boolean isBlocked);
 	
-	@Modifying
-	@Transactional
-	@Query("UPDATE User u SET u.isBlocked = true WHERE u.userId = (SELECT s.user.userId FROM Seller s WHERE s.sellerId = :sellerId )")
-	int blockSeller(@Param("sellerId")Long sellerId);
-	
-	@Modifying
-	@Transactional
-	@Query("UPDATE User u SET u.isBlocked = false WHERE u.userId = (SELECT s.user.userId FROM Seller s WHERE s.sellerId = :sellerId )")
-	int unblockSeller(@Param("sellerId")Long sellerId);
 
-	
-	
-	
     
     @Query("SELECT u FROM User u WHERE u.userId = (SELECT s.user.userId FROM Seller s WHERE s.sellerId = :sellerId)")
     User findBySellerId(Long sellerId);
+    
+	Optional<User> findByEmailAndPassword(String email, String pwd);
+
 }

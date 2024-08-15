@@ -2,6 +2,8 @@ package com.greenify.service;
 
 import java.util.List;
 
+import com.greenify.dto.LoginDto;
+import com.greenify.dto.SignInRequest;
 import com.greenify.dto.orderDtos.ShippingDetailDto;
 import com.greenify.dto.userDtos.CompleteUserDetailsDto;
 import com.greenify.dto.userDtos.ProfileDto;
@@ -13,15 +15,16 @@ public interface UserService {
 	
 	public List<CompleteUserDetailsDto> getUsers();
 	
-	public int blockUser(Long userId);
-	
-	public int unblockUser(Long userId);
-	
+	public int blockUnblockUser(Long userId,Boolean isBlocked);
+		
 	public ShippingDetailDto addShippingAddress(ShippingDetailDto shippingDetailDto,Long userId);
 	
 	public List<ShippingDetailDto> getShippingAddress(Long userId);
 	
 	public ProfileDto getUserProfile(Long userId);
+	
+	public LoginDto authenticateUser(SignInRequest request);
+
 
 
 }

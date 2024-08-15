@@ -2,6 +2,7 @@ package com.greenify.entities;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -30,37 +31,37 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @Table(name = "products")
-public class Product extends BaseEntity{
+public class Product extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long productId;
-	
+
 	@Column(nullable = false)
 	private String productName;
-	
+
 	private String description;
-	
-	@Column(nullable = false,precision = 10, scale = 2)
+
+	@Column(nullable = false, precision = 10, scale = 2)
 	private BigDecimal price;
-	
+
 	@Column(nullable = false)
 	private int stock;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "category_id",nullable = false)
+	@JoinColumn(name = "category_id", nullable = false)
 	private Category category;
-	
+
 	private String imageUrl;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "seller_id",nullable = false)
+	@JoinColumn(name = "seller_id", nullable = false)
 	private Seller seller;
-	
+
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> orderItems;
-	
-	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Wishlist> wishlist;
+	private List<OrderItem> orderItems;
+
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<WishListItem> wishlistItems;
 
 }

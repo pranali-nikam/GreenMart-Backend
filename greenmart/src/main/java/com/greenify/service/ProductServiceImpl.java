@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.greenify.dao.ProductDao;
 import com.greenify.dto.categoryDtos.CategoryNameDto;
@@ -29,7 +30,6 @@ import com.greenify.entities.Category;
 import com.greenify.entities.Product;
 import com.greenify.entities.Seller;
 import com.greenify.exceptions.BusinessException;
-import com.greenify.handler.ImageFileUploadHandler;
 
 @Service
 @Transactional
@@ -89,12 +89,13 @@ public class ProductServiceImpl implements ProductService {
 		 List<Product> productList = productDao.findAll();
 		 productList.forEach(product ->{
 			ProductDetailsDto  productDetailsDto = ProductDetailsDto.builder()
+					.productId(product.getProductId())
 			 .productName(product.getProductName())
 			 .price(product.getPrice())
 			 .description(product.getDescription())
 			 .stock(product.getStock())
 			 .categoryName(product.getCategory().getCategoryName())
-			 .imageUrl(uploadDirPath + product.getImageUrl())
+			 .imageUrl(getImagePath(product.getImageUrl()))
 			 .build();
 			productDetailsDtoList.add(productDetailsDto);
 		 });
@@ -148,6 +149,8 @@ public class ProductServiceImpl implements ProductService {
 		
 		ProductPartialUpdateDto productPartialDto =  modelMapper.map(productDao.save(product), ProductPartialUpdateDto.class);
 		
+		
+		
 		return productPartialDto;
 		}
 		
@@ -159,15 +162,16 @@ public class ProductServiceImpl implements ProductService {
 		
 		List<ProductDetailsDto> productDetailsDtoList = new ArrayList<>();
 		 List<Product> productList = productDao.findAllBySellerId(sellerId);
-
+		 
 		 productList.forEach(product ->{
 			 ProductDetailsDto productDetailsDto = ProductDetailsDto.builder()
+					 .productId(product.getProductId())
 					 .productName(product.getProductName())
 					 .description(product.getDescription())
 					 .categoryName(product.getCategory().getCategoryName())
 					 .price(product.getPrice())
 					 .stock(product.getStock())
-					 .imageUrl(product.getImageUrl())
+					 .imageUrl(getImagePath(product.getImageUrl()))
 					 .build();
 			 productDetailsDtoList.add(productDetailsDto);
 			 
@@ -203,7 +207,29 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	
-	
-	
+	private String getImagePath(String imageName) {
+	return	ServletUriComponentsBuilder.fromCurrentContextPath()
+        .path("/uploads/images/")
+        .path(imageName)
+        .toUriString();
+	}
 
+	@Override
+	public ProductDetailsDto getProductByProductId(Long productId) {		
+		Product product = productDao.findById(productId).get();
+	
+		ProductDetailsDto productDetailsDto = ProductDetailsDto.builder()
+				 .productId(product.getProductId())
+				 .productName(product.getProductName())
+				 .description(product.getDescription())
+				 .stock(product.getStock())
+				 .categoryName(product.getCategory().getCategoryName())
+				 .price(product.getPrice())
+				 .imageUrl(getImagePath(product.getImageUrl()))
+				 .SellerId(product.getSeller().getSellerId())
+				 .build();	
+		
+		return productDetailsDto;
+	} 
+	
 }

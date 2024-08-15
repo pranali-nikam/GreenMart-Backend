@@ -22,7 +22,6 @@ import com.greenify.dto.WishlistDto;
 import com.greenify.exceptions.BusinessException;
 import com.greenify.service.WishListService;
 
-
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("api/wishlist")
@@ -44,23 +43,17 @@ public class WishlistController {
 	@PostMapping("/add/{userId}")
 	public ResponseEntity<?> addProductToWishlist(@RequestBody @Valid WishlistDto wishlistDto,
 			@PathVariable Long userId) {
-		try {
-			wishlistService.addProductToWishlist(wishlistDto, userId);
-			return ResponseEntity.status(201).build();
-		} catch (BusinessException e) {
-			return ResponseEntity.notFound().build();
-		}
+		String message = wishlistService.addProductToWishlist(wishlistDto, userId);
+		return ResponseEntity.ok(message);
 	}
 
-	@DeleteMapping("/removeFromWishlist/{userId}")
-	public ResponseEntity<?> removeProductFromWishlist(@RequestBody @Valid WishlistDto wishlistDto,
-			@PathVariable Long userId) {
-		try {
-			wishlistService.removeProductFromWishlist(wishlistDto, userId);
-			return ResponseEntity.noContent().build();
-		} catch (BusinessException e) {
-			return ResponseEntity.notFound().build();
-		}
+	@DeleteMapping("/removeFromWishlist/{userId}/{productId}")
+	public ResponseEntity<?> removeProductFromWishlist(
+			@PathVariable("userId") Long userId,@PathVariable("productId") Long productId) {
+
+		String message = wishlistService.removeProductFromWishlist(productId, userId);
+		return ResponseEntity.ok(message);
+
 	}
 
 }

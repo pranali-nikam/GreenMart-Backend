@@ -9,8 +9,8 @@ public interface WishListService {
 	
 	List<WishlistDetailsDto> getWishlistByUserId(Long userId);
 	
-	void addProductToWishlist(WishlistDto wishlistDto,Long userId);
+	String addProductToWishlist(WishlistDto wishlistDto,Long userId);
 	
-	void removeProductFromWishlist(WishlistDto wishlistDto,Long userId);
+	String removeProductFromWishlist(Long productId,Long userId);
 
 }

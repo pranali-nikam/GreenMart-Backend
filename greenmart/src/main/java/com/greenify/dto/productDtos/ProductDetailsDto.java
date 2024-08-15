@@ -17,6 +17,8 @@ import lombok.ToString;
 @AllArgsConstructor
 public class ProductDetailsDto {
 
+	private Long productId;
+	
 	private String productName;
 	
 	private String description;
@@ -28,4 +30,6 @@ public class ProductDetailsDto {
 	private String categoryName;
 	
 	private String imageUrl;
+	
+	private Long SellerId;
 }

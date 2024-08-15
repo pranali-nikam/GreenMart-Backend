@@ -3,6 +3,7 @@ package com.greenify.dto.userDtos;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.greenify.dto.orderDtos.ShippingDetailDto;
 import com.greenify.entities.Order;
 import com.greenify.entities.ShippingAddress;
 import com.greenify.entities.Wishlist;
@@ -28,6 +29,8 @@ public class ProfileDto {
 	private String email;
 	
 	private LocalDate dob;
+	
+	private ShippingDetailDto shippingDetail;
 	
 	
 }

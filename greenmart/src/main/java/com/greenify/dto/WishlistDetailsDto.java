@@ -29,4 +29,6 @@ public class WishlistDetailsDto {
 	private String categoryName;
 	
 	private String imageUrl;
+	
+	private Long productId; 
 }

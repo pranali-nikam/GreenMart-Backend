@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.greenify.dao.CartDao;
 import com.greenify.dao.ProductDao;
@@ -67,6 +68,10 @@ public class CartServiceImpl implements CartService{
 					dto.setProductId(cart.getProduct().getProductId());
 					dto.setProductName(cart.getProduct().getProductName());
 					dto.setQuantity(cart.getQuantity());
+					dto.setImageUrl(getImagePath(cart.getProduct().getImageUrl()));
+					dto.setStock(setStock(cart.getProduct().getStock()));
+					dto.setPrice(cart.getProduct().getPrice());
+					dto.setSellerId(cart.getProduct().getSeller().getSellerId());
 					return dto;
 				})
 				.collect(Collectors.toList());
@@ -103,6 +108,18 @@ public class CartServiceImpl implements CartService{
 				.orElseThrow(()-> new BusinessException("Product not found in the user's cart"));
 		
 		cartDao.delete(cart);
+	}
+	
+	
+	private String getImagePath(String imageName) {
+		return	ServletUriComponentsBuilder.fromCurrentContextPath()
+	        .path("/uploads/images/")
+	        .path(imageName)
+	        .toUriString();
+		}
+	
+	private String setStock(int stock) {
+		return stock>0? String.valueOf(stock):"Out Of Stock";
 	}
 
 }

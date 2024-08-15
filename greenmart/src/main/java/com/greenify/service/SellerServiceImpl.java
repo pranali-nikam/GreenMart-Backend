@@ -22,28 +22,28 @@ import com.greenify.enums.Role;
 @Service
 @Transactional
 public class SellerServiceImpl implements SellerService {
-	
+
 	@Autowired
 	private SellerDao sellerDao;
-	
+
 	@Autowired
 	private UserDao userDao;
-	
+
 	@Autowired
 	private ModelMapper modelMapper;
 
 	@Override
 	public SellerDto registerSeller(SellerDto sellerDto) {
-        Seller seller = modelMapper.map(sellerDto, Seller.class);
+		Seller seller = modelMapper.map(sellerDto, Seller.class);
 
 		User user = seller.getUser();
-        if (user.getUserId() == null) {
-            user.setRole(Role.SELLER);
-        }
-        user.setSeller(seller);
-        
-        userDao.save(user);
-        
+		if (user.getUserId() == null) {
+			user.setRole(Role.SELLER);
+		}
+		user.setSeller(seller);
+
+		userDao.save(user);
+
 		return modelMapper.map(seller, SellerDto.class);
 	}
 
@@ -52,62 +52,43 @@ public class SellerServiceImpl implements SellerService {
 		List<Seller> sellerList = sellerDao.findAll();
 		return mapSellerToSellerDetailsDTO(sellerList);
 	}
-	
+
 	private List<SellerDetailsDto> mapSellerToSellerDetailsDTO(List<Seller> sellers) {
-		
+
 		List<SellerDetailsDto> sellerDetailsDtoList = new ArrayList<>();
-		
-		sellers.forEach(seller ->{
-			SellerDetailsDto sellerDetailsDto = SellerDetailsDto.builder()
-			.name(seller.getUser().getFirstName() + " " + seller.getUser().getLastName())
-			.email(seller.getUser().getEmail())
-			.mobileNumber(seller.getUser().getMobileNumber())
-			.address(seller.getAddress())
-			.gstinNumber(seller.getGstinNumber())
-			.storeName(seller.getStoreName())
-			.phone(seller.getPhone())
-			.isBlocked(seller.getUser().getIsBlocked())
-			.build();
-			
+
+		sellers.forEach(seller -> {
+			SellerDetailsDto sellerDetailsDto = SellerDetailsDto.builder().sellerId(seller.getSellerId())
+					.name(seller.getUser().getFirstName() + " " + seller.getUser().getLastName())
+					.email(seller.getUser().getEmail()).mobileNumber(seller.getUser().getMobileNumber())
+					.address(seller.getAddress()).gstinNumber(seller.getGstinNumber()).storeName(seller.getStoreName())
+					.phone(seller.getPhone()).isBlocked(seller.getUser().getIsBlocked()).build();
+
 			sellerDetailsDtoList.add(sellerDetailsDto);
 		});
-		
-		return sellerDetailsDtoList;	
+
+		return sellerDetailsDtoList;
 	}
 
 	@Override
-	public int blockSeller(Long sellerId) {
-		
-		return userDao.blockSeller(sellerId);
-	}
+	public int blockUnblockSeller(Long sellerId, Boolean isBlocked) {
 
-	@Override
-	public int unblockSeller(Long sellerId) {
-		
-		return userDao.unblockSeller(sellerId);
+		return userDao.blockUnblockSeller(sellerId, isBlocked);
 	}
 
 	@Override
 	public SellerProfileDto getSellerProfile(Long sellerId) {
-		
-		User user = userDao.findBySellerId(sellerId);
-		
-		
 
-		    
-		    SellerProfileDto sellerProfileDto = SellerProfileDto.builder()
-		        .name(user.getFirstName()+" "+user.getLastName())
-		        .email(user.getEmail())
-		        .mobileNumber(user.getMobileNumber())
-		        .dob(user.getDob())
-		        .storeName(user.getSeller().getStoreName())
-		        .address(user.getSeller().getAddress())
-		        .phone(user.getSeller().getPhone())
-		        .gstinNumber(user.getSeller().getGstinNumber())
-		        .build();
-		
+		User user = userDao.findBySellerId(sellerId);
+
+		SellerProfileDto sellerProfileDto = SellerProfileDto.builder()
+				.name(user.getFirstName() + " " + user.getLastName()).email(user.getEmail())
+				.mobileNumber(user.getMobileNumber()).dob(user.getDob()).storeName(user.getSeller().getStoreName())
+				.address(user.getSeller().getAddress()).phone(user.getSeller().getPhone())
+				.gstinNumber(user.getSeller().getGstinNumber()).build();
+
 		return sellerProfileDto;
-		
+
 	}
 
 }

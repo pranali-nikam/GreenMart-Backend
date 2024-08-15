@@ -4,6 +4,8 @@ package com.greenify.dto.sellerDtos;
 
 import com.greenify.dto.userDtos.UserDto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +15,8 @@ import lombok.ToString;
 @Getter
 @ToString
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class SellerDto {
 
 	private UserDto user;

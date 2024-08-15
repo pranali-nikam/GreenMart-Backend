@@ -47,11 +47,7 @@ public class Order extends BaseEntity{
 	
 	@Column(nullable = false,precision = 10, scale = 2)
 	private BigDecimal totalAmount;
-	
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private Status status;
-	
+
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "shipping_address_id")
 	private ShippingAddress shippingAddress;
@@ -62,10 +58,6 @@ public class Order extends BaseEntity{
 	
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
 	private List<OrderItem> orderItems;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "seller_id",nullable = false)
-	private Seller seller;
 	
 	@OneToOne(mappedBy = "order",cascade = CascadeType.ALL,orphanRemoval = true)
 	private PaymentDetail paymentDetails;
